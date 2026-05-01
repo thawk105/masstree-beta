@@ -49,9 +49,6 @@ class stringbag {
     struct info_type {
         offset_type pos;
         offset_type len;
-        info_type(unsigned p, unsigned l)
-            : pos(p), len(l) {
-        }
     };
 
  public:
@@ -130,7 +127,7 @@ class stringbag {
         } else
             return false;
         memcpy(s_ + pos, s, len);
-        info_[p] = info_type(pos, len);
+        info_[p] = info_type{static_cast<offset_type>(pos), static_cast<offset_type>(len)};
         return true;
     }
     /** @override */
