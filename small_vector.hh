@@ -71,6 +71,18 @@ class small_vector {
         char lv_[sizeof(T) * N]; // XXX does not obey alignof(T)
 
         inline rep(const A& a);
+
+        // std::allocator<T>::construct/destroy were removed in C++20.
+        // Forward through allocator_traits, which works in both C++17
+        // and C++20.
+        template <typename... Args>
+        void construct(T* p, Args&&... args) {
+            std::allocator_traits<A>::construct(
+                static_cast<A&>(*this), p, std::forward<Args>(args)...);
+        }
+        void destroy(T* p) {
+            std::allocator_traits<A>::destroy(static_cast<A&>(*this), p);
+        }
     };
     rep r_;
 
