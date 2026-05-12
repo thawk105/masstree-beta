@@ -16,6 +16,7 @@
 #ifndef LCDF_STRING_HH
 #define LCDF_STRING_HH
 #include "string_base.hh"
+#include <atomic>
 #include <string>
 #include <utility>
 namespace lcdf {
@@ -238,7 +239,12 @@ class String : public String_base<String> {
   private:
     /** @cond never */
     struct memo_type {
-        volatile uint32_t refcount;
+        // C++20 deprecated `++/--` on volatile, so refcount is now an
+        // explicit atomic. The increment/decrement operators on
+        // std::atomic<T> have the same ordering and return-value
+        // semantics as the previous `volatile uint32_t` usage here
+        // (in particular, `--memo->refcount == 0` still works).
+        std::atomic<uint32_t> refcount;
         uint32_t capacity;
         volatile uint32_t dirty;
 #if HAVE_STRING_PROFILING > 1
